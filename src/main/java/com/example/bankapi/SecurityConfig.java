@@ -21,6 +21,7 @@ public class SecurityConfig {
                     "/login",
                     "/web/login",
                     "/web/register",
+                    "/auth/login",
                     "/css/**",
                     "/js/**",
                     "/h2-console/**",
@@ -35,6 +36,7 @@ public class SecurityConfig {
             )
             .formLogin(form -> form
                 .loginPage("/web/login")
+                .loginProcessingUrl("/auth/login")
                 .defaultSuccessUrl("/web/accounts", true)
                 .permitAll()
             )
