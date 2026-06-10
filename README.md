@@ -720,7 +720,7 @@ Ce projet est prêt pour un déploiement direct sur Render via le fichier `rende
 - Profil actif: `prod`
 - Port: fourni par Render via `PORT`
 - Base de données: injectée automatiquement via les variables `SPRING_DATASOURCE_*`
-- URL JDBC: reconstruite à partir de `DATABASE_URL` au démarrage du conteneur
+- URL JDBC: normalisée au démarrage du conteneur, que Render injecte `SPRING_DATASOURCE_URL` ou `DATABASE_URL`
 
 ### Fichiers utilisés par Render
 - [`render.yaml`](render.yaml): blueprint du service et de la base
