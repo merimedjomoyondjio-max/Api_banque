@@ -710,16 +710,20 @@ Voir les documents:
 Ce projet est prêt pour un déploiement direct sur Render via le fichier `render.yaml` à la racine.
 
 ### Ce que Render crée
-- 1 service web Java
+- 1 service web Docker pour Spring Boot
 - 1 base PostgreSQL liée automatiquement au service
 - 1 profil Spring `prod`
 
 ### Réglages déjà prévus
-- Build: `mvn clean package -DskipTests`
-- Start: `java -jar target/bank-api-0.0.1-SNAPSHOT.jar`
+- Build Docker: Maven compile dans l'image
+- Start Docker: `java -Dserver.port=${PORT:-8080} -jar /app/app.jar`
 - Profil actif: `prod`
 - Port: fourni par Render via `PORT`
 - Base de données: injectée automatiquement via les variables `SPRING_DATASOURCE_*`
+
+### Fichiers utilisés par Render
+- [`render.yaml`](render.yaml): blueprint du service et de la base
+- [`Dockerfile`](Dockerfile): build et lancement de l’application
 
 ### Après le déploiement
 1. Ouvre le service Render.
@@ -730,7 +734,7 @@ Ce projet est prêt pour un déploiement direct sur Render via le fichier `rende
 ### En cas de souci
 - Si la base n’est pas accessible, vérifie que le service PostgreSQL a bien été créé.
 - Si l’application ne démarre pas, vérifie que le jar généré est bien `target/bank-api-0.0.1-SNAPSHOT.jar`.
-- Si tu changes de nom d’artifact Maven, pense à mettre à jour `startCommand`.
+- Si tu changes le packaging Maven, pense à adapter `COPY --from=build /app/target/*.jar /app/app.jar`.
 
 ---
 
