@@ -3,6 +3,8 @@ package com.example.bankapi.dto;
 import java.math.BigDecimal;
 import java.time.Instant;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Résumé d'un compte bancaire")
@@ -32,6 +34,11 @@ public class AccountSummary {
     }
 
     public Long getAccountId() {
+        return accountId;
+    }
+
+    @JsonProperty("id")
+    public Long getId() {
         return accountId;
     }
 

@@ -277,9 +277,9 @@ public class AccountControllerTest {
         mockMvc.perform(get("/accounts/" + testAccount1.getId()))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(testAccount1.getId()))
-            .andExpect(jsonPath("$.name").value("Votre Nom"))
-            .andExpect(jsonPath("$.email").value("votre.email@example.com"))
-            .andExpect(jsonPath("$.phone").value("+33600000000"))
+            .andExpect(jsonPath("$.name").value("JAPHET DJOMO"))
+            .andExpect(jsonPath("$.email").value("JAPHETDJOM@GMAIL.COM"))
+            .andExpect(jsonPath("$.phone").value("+237657786440"))
             .andExpect(jsonPath("$.balance").value(1000.00))
             .andExpect(jsonPath("$.createdAt").exists())
             .andExpect(jsonPath("$.updatedAt").exists());
@@ -380,7 +380,7 @@ public class AccountControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request)))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.newBalance").value(1000000000.99));
+            .andExpect(jsonPath("$.newBalance").value(1000000999.99));
     }
 
     // =====================================================================

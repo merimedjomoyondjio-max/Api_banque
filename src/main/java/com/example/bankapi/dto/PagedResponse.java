@@ -2,6 +2,8 @@ package com.example.bankapi.dto;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class PagedResponse<T> {
 
     private List<T> data;
@@ -21,6 +23,11 @@ public class PagedResponse<T> {
     }
 
     public List<T> getData() {
+        return data;
+    }
+
+    @JsonProperty("results")
+    public List<T> getResults() {
         return data;
     }
 
@@ -48,6 +55,11 @@ public class PagedResponse<T> {
         return totalItems;
     }
 
+    @JsonProperty("totalElements")
+    public long getTotalElements() {
+        return totalItems;
+    }
+
     public void setTotalItems(long totalItems) {
         this.totalItems = totalItems;
     }
@@ -62,6 +74,16 @@ public class PagedResponse<T> {
 
     public boolean isLast() {
         return isLast;
+    }
+
+    @JsonProperty("isLast")
+    public boolean getIsLast() {
+        return isLast;
+    }
+
+    @JsonProperty("pageSize")
+    public int getPageSize() {
+        return itemsPerPage;
     }
 
     public void setLast(boolean last) {

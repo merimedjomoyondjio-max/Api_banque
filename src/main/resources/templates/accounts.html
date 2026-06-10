@@ -2,85 +2,559 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Comptes - API Bancaire</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Bank API</title>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        display: ['"Space Grotesk"', 'sans-serif'],
+                        body: ['Inter', 'sans-serif']
+                    },
+                    boxShadow: {
+                        glow: '0 28px 100px rgba(14, 165, 233, 0.18)'
+                    }
+                }
+            }
+        };
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        @keyframes drift {
+            0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+            50% { transform: translate3d(0, -18px, 0) scale(1.03); }
+        }
+        @keyframes shimmer {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+        @keyframes rise {
+            from { opacity: 0; transform: translateY(14px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-drift { animation: drift 12s ease-in-out infinite; }
+        .animate-rise { animation: rise 0.6s ease-out both; }
+        .animate-rise-delay-1 { animation: rise 0.6s ease-out 0.08s both; }
+        .animate-rise-delay-2 { animation: rise 0.6s ease-out 0.16s both; }
+        .animate-rise-delay-3 { animation: rise 0.6s ease-out 0.24s both; }
+        .shimmer {
+            background-size: 200% 200%;
+            animation: shimmer 10s linear infinite;
+        }
+        .modal-open {
+            overflow: hidden;
+        }
+    </style>
 </head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand" href="#">API Bancaire</a>
-            <div class="navbar-nav ms-auto">
-                <form th:action="@{/logout}" method="post" class="d-inline">
-                    <button type="submit" class="btn btn-outline-light">Déconnexion</button>
-                </form>
-            </div>
-        </div>
-    </nav>
+<body class="min-h-screen bg-slate-950 font-body text-slate-100">
+<div class="fixed inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute -top-32 left-8 h-96 w-96 rounded-full bg-cyan-500/20 blur-3xl animate-drift"></div>
+    <div class="absolute top-36 right-6 h-80 w-80 rounded-full bg-emerald-500/15 blur-3xl animate-drift" style="animation-delay: -4s"></div>
+    <div class="absolute bottom-0 left-1/3 h-[28rem] w-[28rem] rounded-full bg-sky-500/10 blur-3xl animate-drift" style="animation-delay: -8s"></div>
+    <div class="absolute inset-0 bg-[linear-gradient(rgba(148,163,184,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(148,163,184,0.04)_1px,transparent_1px)] bg-[size:72px_72px] opacity-40"></div>
+</div>
 
-    <div class="container mt-4">
-        <h1>Comptes bancaires</h1>
+<div class="relative mx-auto min-h-screen max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+    <header class="mb-8 overflow-hidden rounded-[2rem] border border-white/10 bg-white/5 shadow-glow backdrop-blur-xl">
+        <div class="shimmer bg-[linear-gradient(120deg,rgba(34,211,238,0.14),rgba(16,185,129,0.08),rgba(59,130,246,0.14))] px-6 py-6 sm:px-8">
+            <div class="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+                <div class="max-w-3xl">
+                    <div class="inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-slate-950/40 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-cyan-200">
+                        Bank API Control Room
+                    </div>
+                    <h1 class="mt-4 font-display text-3xl leading-tight text-white sm:text-4xl lg:text-5xl">
+                        Un dashboard bancaire luxueux, lisible et vraiment vivant.
+                    </h1>
+                    <p class="mt-3 max-w-2xl text-sm leading-6 text-slate-200/85 sm:text-base">
+                        Créez un compte, consultez les soldes, ouvrez les détails en modale et exécutez les opérations dans un espace plus premium.
+                    </p>
+                </div>
 
-        <div class="row mb-4">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h5>Créer un compte</h5>
-                    </div>
-                    <div class="card-body">
-                        <form th:action="@{/accounts/create}" method="post" th:object="${createRequest}">
-                            <div class="mb-3">
-                                <label for="ownerName" class="form-label">Nom du titulaire</label>
-                                <input type="text" id="ownerName" class="form-control" th:field="*{ownerName}" required>
-                                <div th:if="${#fields.hasErrors('ownerName')}" class="invalid-feedback d-block" th:errors="*{ownerName}"></div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="initialBalance" class="form-label">Solde initial</label>
-                                <input type="number" step="0.01" min="0" id="initialBalance" class="form-control" th:field="*{initialBalance}" required>
-                                <div th:if="${#fields.hasErrors('initialBalance')}" class="invalid-feedback d-block" th:errors="*{initialBalance}"></div>
-                            </div>
-                            <button type="submit" class="btn btn-success">Créer le compte</button>
-                        </form>
-                    </div>
+                <div class="flex flex-wrap items-center gap-3">
+                    <a th:href="@{/swagger-ui/index.html}"
+                       class="inline-flex items-center justify-center rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-2.5 text-sm font-semibold text-slate-100 transition hover:border-cyan-400/40 hover:bg-cyan-400/10">
+                        Swagger
+                    </a>
+                    <form th:action="@{/logout}" method="post">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                        <button type="submit"
+                                class="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-cyan-400 via-sky-400 to-emerald-400 px-4 py-2.5 text-sm font-semibold text-slate-950 transition hover:translate-y-[-1px] hover:shadow-lg hover:shadow-cyan-500/20">
+                            Déconnexion
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
+    </header>
 
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h5>Liste des comptes</h5>
-                    </div>
-                    <div class="card-body">
-                        <div th:if="${#lists.isEmpty(accounts)}" class="alert alert-info">
-                            Aucun compte trouvé.
-                        </div>
-                        <div th:if="${!#lists.isEmpty(accounts)}" class="table-responsive">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Nom du titulaire</th>
-                                        <th>Solde</th>
-                                        <th>Date de création</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr th:each="account : ${accounts}">
-                                        <td th:text="${account.id}"></td>
-                                        <td th:text="${account.ownerName}"></td>
-                                        <td th:text="${account.balance} + ' FCFA'"></td>
-                                        <td th:text="${#temporals.format(account.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div th:if="${successMessage}" class="mb-6 rounded-2xl border border-emerald-400/20 bg-emerald-400/10 px-5 py-4 text-sm text-emerald-100 animate-rise">
+        <span class="font-semibold">Succès:</span> <span th:text="${successMessage}"></span>
+    </div>
+    <div th:if="${errorMessage}" class="mb-6 rounded-2xl border border-rose-400/20 bg-rose-400/10 px-5 py-4 text-sm text-rose-100 animate-rise">
+        <span class="font-semibold">Erreur:</span> <span th:text="${errorMessage}"></span>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <div class="rounded-[1.75rem] border border-white/10 bg-white/5 p-5 shadow-glow backdrop-blur-xl animate-rise">
+            <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Comptes total</p>
+            <p class="mt-3 font-display text-3xl text-white" th:text="${accountCount}">0</p>
+            <p class="mt-2 text-sm text-slate-400">Comptes visibles dans la base.</p>
+        </div>
+        <div class="rounded-[1.75rem] border border-white/10 bg-white/5 p-5 shadow-glow backdrop-blur-xl animate-rise-delay-1">
+            <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Solde total</p>
+            <p class="mt-3 font-display text-3xl text-white">
+                <span th:text="${totalBalance}">0.00</span>
+                <span class="text-sm text-slate-400">FCFA</span>
+            </p>
+            <p class="mt-2 text-sm text-slate-400">Tous les comptes confondus.</p>
+        </div>
+        <div class="rounded-[1.75rem] border border-white/10 bg-white/5 p-5 shadow-glow backdrop-blur-xl animate-rise-delay-2">
+            <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Moyenne</p>
+            <p class="mt-3 font-display text-3xl text-white">
+                <span th:text="${averageBalance}">0.00</span>
+                <span class="text-sm text-slate-400">FCFA</span>
+            </p>
+            <p class="mt-2 text-sm text-slate-400">Balance moyenne par compte.</p>
+        </div>
+        <div class="rounded-[1.75rem] border border-white/10 bg-white/5 p-5 shadow-glow backdrop-blur-xl animate-rise-delay-3">
+            <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Pagination</p>
+            <p class="mt-3 font-display text-3xl text-white">
+                <span th:text="${currentPage}">1</span>
+                <span class="text-sm text-slate-400">/ <span th:text="${totalPages}">1</span></span>
+            </p>
+            <p class="mt-2 text-sm text-slate-400">
+                <span th:text="${itemsPerPage}">8</span> comptes par page.
+            </p>
+        </div>
+    </section>
+
+    <section class="mt-8 grid gap-6 xl:grid-cols-[1.08fr_0.92fr]">
+        <div class="space-y-6">
+            <section class="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-glow backdrop-blur-xl animate-rise">
+                <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <div>
+                        <h2 class="font-display text-2xl text-white">Créer un compte</h2>
+                        <p class="mt-1 text-sm text-slate-400">Nom, email, téléphone et solde initial optionnel.</p>
+                    </div>
+                    <span class="inline-flex items-center rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-100">
+                        POST /accounts
+                    </span>
+                </div>
+
+                <form th:action="@{/web/accounts/create}" method="post" th:object="${createRequest}" class="mt-6 grid gap-4 md:grid-cols-2">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <input type="hidden" name="page" th:value="${currentPage}">
+                    <input type="hidden" name="limit" th:value="${itemsPerPage}">
+
+                    <div>
+                        <label for="name" class="mb-2 block text-sm font-semibold text-slate-200">Nom complet</label>
+                        <input id="name" type="text" th:field="*{name}" placeholder="Japheth Djomo"
+                               class="w-full rounded-2xl border border-white/10 bg-slate-950/50 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-400/60 focus:ring-4 focus:ring-cyan-400/10">
+                        <p class="mt-2 text-xs text-rose-300" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></p>
+                    </div>
+
+                    <div>
+                        <label for="email" class="mb-2 block text-sm font-semibold text-slate-200">Email</label>
+                        <input id="email" type="email" th:field="*{email}" placeholder="japheth@example.com"
+                               class="w-full rounded-2xl border border-white/10 bg-slate-950/50 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-400/60 focus:ring-4 focus:ring-cyan-400/10">
+                        <p class="mt-2 text-xs text-rose-300" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
+                    </div>
+
+                    <div>
+                        <label for="phone" class="mb-2 block text-sm font-semibold text-slate-200">Téléphone</label>
+                        <input id="phone" type="tel" th:field="*{phone}" placeholder="+237657786440"
+                               class="w-full rounded-2xl border border-white/10 bg-slate-950/50 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-400/60 focus:ring-4 focus:ring-cyan-400/10">
+                        <p class="mt-2 text-xs text-rose-300" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></p>
+                    </div>
+
+                    <div>
+                        <label for="initialBalance" class="mb-2 block text-sm font-semibold text-slate-200">Solde initial</label>
+                        <input id="initialBalance" type="number" step="0.01" min="0" th:field="*{initialBalance}" placeholder="1000.00"
+                               class="w-full rounded-2xl border border-white/10 bg-slate-950/50 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-400/60 focus:ring-4 focus:ring-cyan-400/10">
+                        <p class="mt-2 text-xs text-rose-300" th:if="${#fields.hasErrors('initialBalance')}" th:errors="*{initialBalance}"></p>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <button type="submit"
+                                class="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-400 via-sky-400 to-emerald-400 px-5 py-3 font-semibold text-slate-950 transition hover:translate-y-[-1px] hover:shadow-lg hover:shadow-cyan-500/20">
+                            <span>Créer le compte</span>
+                            <span>+</span>
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-glow backdrop-blur-xl animate-rise-delay-1">
+                <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <div>
+                        <h2 class="font-display text-2xl text-white">Comptes</h2>
+                        <p class="mt-1 text-sm text-slate-400">
+                            <span th:text="${totalItems}">0</span> comptes au total, filtrables côté navigateur.
+                        </p>
+                    </div>
+                    <div class="w-full md:w-72">
+                        <label for="accountSearch" class="sr-only">Rechercher</label>
+                        <input id="accountSearch" type="search" oninput="filterAccounts()" placeholder="Rechercher un compte..."
+                               class="w-full rounded-2xl border border-white/10 bg-slate-950/50 px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-400/60 focus:ring-4 focus:ring-cyan-400/10">
+                    </div>
+                </div>
+
+                <div class="mt-6 overflow-hidden rounded-[1.5rem] border border-white/10">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-white/10">
+                            <thead class="bg-slate-950/70 text-left text-xs uppercase tracking-[0.2em] text-slate-400">
+                            <tr>
+                                <th class="px-4 py-4 font-semibold">Compte</th>
+                                <th class="px-4 py-4 font-semibold">Email</th>
+                                <th class="px-4 py-4 font-semibold">Solde</th>
+                                <th class="px-4 py-4 font-semibold">Création</th>
+                                <th class="px-4 py-4 font-semibold text-right">Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody class="divide-y divide-white/10 bg-white/5">
+                            <tr th:if="${#lists.isEmpty(accounts)}">
+                                <td colspan="5" class="px-4 py-10 text-center text-sm text-slate-400">
+                                    Aucun compte trouvé.
+                                </td>
+                            </tr>
+                            <tr th:each="account : ${accounts}"
+                                data-account-row="true"
+                                th:attr="data-search=${account.name + ' ' + account.email + ' ' + account.accountId}"
+                                th:classappend="${selectedAccount != null and selectedAccount.accountId == account.accountId} ? ' bg-cyan-400/10' : ''"
+                                class="transition hover:bg-white/5">
+                                <td class="px-4 py-4">
+                                    <div class="font-semibold text-white" th:text="${account.name}">Nom</div>
+                                    <div class="mt-1 text-xs text-slate-400">ID #<span th:text="${account.accountId}">1</span></div>
+                                </td>
+                                <td class="px-4 py-4 text-sm text-slate-300" th:text="${account.email}">email</td>
+                                <td class="px-4 py-4">
+                                    <span class="inline-flex rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-sm font-semibold text-emerald-100">
+                                        <span th:text="${account.balance}">0.00</span>&nbsp;FCFA
+                                    </span>
+                                </td>
+                                <td class="px-4 py-4 text-sm text-slate-300" th:text="${#temporals.format(account.createdAt, 'dd/MM/yyyy HH:mm')}">date</td>
+                                <td class="px-4 py-4">
+                                    <div class="flex justify-end gap-2">
+                                        <button type="button"
+                                                class="inline-flex items-center rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-slate-100 transition hover:border-cyan-400/40 hover:bg-cyan-400/10"
+                                                data-open-account-modal="true"
+                                                th:attr="data-account-id=${account.accountId},data-account-name=${account.name},data-account-email=${account.email},data-account-balance=${account.balance},data-account-created=${#temporals.format(account.createdAt, 'dd/MM/yyyy HH:mm')},data-account-link=@{/web/accounts/{id}(id=${account.accountId}, page=${currentPage}, limit=${itemsPerPage})}">
+                                            Aperçu
+                                        </button>
+                                        <a th:href="@{/web/accounts/{id}(id=${account.accountId}, page=${currentPage}, limit=${itemsPerPage})}"
+                                           class="inline-flex items-center rounded-2xl bg-gradient-to-r from-cyan-400 via-sky-400 to-emerald-400 px-3 py-2 text-sm font-semibold text-slate-950 transition hover:translate-y-[-1px]">
+                                            Ouvrir
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <p class="text-sm text-slate-400">
+                        Page <span class="font-semibold text-white" th:text="${currentPage}">1</span>
+                        sur <span class="font-semibold text-white" th:text="${totalPages}">1</span>.
+                    </p>
+                    <div class="flex items-center gap-2">
+                        <a th:if="${currentPage > 1}"
+                           th:href="@{/web/accounts(page=${currentPage - 1}, limit=${itemsPerPage})}"
+                           class="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-100 transition hover:border-cyan-400/40 hover:bg-cyan-400/10">
+                            Précédent
+                        </a>
+                        <a th:if="${!isLast}"
+                           th:href="@{/web/accounts(page=${currentPage + 1}, limit=${itemsPerPage})}"
+                           class="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-100 transition hover:border-cyan-400/40 hover:bg-cyan-400/10">
+                            Suivant
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <aside class="space-y-6 lg:sticky lg:top-6 self-start">
+            <section th:if="${selectedAccount != null}" class="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-glow backdrop-blur-xl animate-rise">
+                <div class="flex items-start justify-between gap-4">
+                    <div>
+                        <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Compte sélectionné</p>
+                        <h2 class="mt-3 font-display text-3xl text-white" th:text="${selectedAccount.name}">Nom</h2>
+                        <p class="mt-2 text-sm text-slate-400">ID #<span th:text="${selectedAccount.accountId}">1</span></p>
+                    </div>
+                    <div class="rounded-2xl border border-emerald-400/20 bg-emerald-400/10 px-4 py-3 text-right">
+                        <p class="text-xs uppercase tracking-[0.2em] text-emerald-200">Balance</p>
+                        <p class="mt-1 font-display text-2xl text-white">
+                            <span th:text="${selectedAccount.balance}">0.00</span> FCFA
+                        </p>
+                    </div>
+                </div>
+
+                <dl class="mt-6 grid gap-4 sm:grid-cols-2">
+                    <div class="rounded-2xl border border-white/10 bg-slate-950/40 p-4">
+                        <dt class="text-xs uppercase tracking-[0.2em] text-slate-400">Email</dt>
+                        <dd class="mt-2 break-words text-sm font-semibold text-white" th:text="${selectedAccount.email}">email</dd>
+                    </div>
+                    <div class="rounded-2xl border border-white/10 bg-slate-950/40 p-4">
+                        <dt class="text-xs uppercase tracking-[0.2em] text-slate-400">Téléphone</dt>
+                        <dd class="mt-2 text-sm font-semibold text-white" th:text="${selectedAccount.phone}">phone</dd>
+                    </div>
+                    <div class="rounded-2xl border border-white/10 bg-slate-950/40 p-4">
+                        <dt class="text-xs uppercase tracking-[0.2em] text-slate-400">Créé le</dt>
+                        <dd class="mt-2 text-sm font-semibold text-white" th:text="${#temporals.format(selectedAccount.createdAt, 'dd/MM/yyyy HH:mm')}">date</dd>
+                    </div>
+                    <div class="rounded-2xl border border-white/10 bg-slate-950/40 p-4">
+                        <dt class="text-xs uppercase tracking-[0.2em] text-slate-400">Mis à jour</dt>
+                        <dd class="mt-2 text-sm font-semibold text-white" th:text="${#temporals.format(selectedAccount.updatedAt, 'dd/MM/yyyy HH:mm')}">date</dd>
+                    </div>
+                </dl>
+
+                <div class="mt-6 grid gap-3 sm:grid-cols-2">
+                    <button type="button"
+                            class="rounded-2xl bg-gradient-to-r from-cyan-400 via-sky-400 to-emerald-400 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:translate-y-[-1px]"
+                            data-open-operation-modal="true"
+                            data-operation="deposit"
+                            th:attr="data-account-id=${selectedAccount.accountId},data-account-name=${selectedAccount.name},data-action=@{/web/accounts/{id}/deposit(id=${selectedAccount.accountId}, page=${currentPage}, limit=${itemsPerPage})}">
+                        Ouvrir le dépôt
+                    </button>
+                    <button type="button"
+                            class="rounded-2xl border border-rose-400/20 bg-rose-400/10 px-4 py-3 text-sm font-semibold text-rose-100 transition hover:border-rose-300/40 hover:bg-rose-400/15"
+                            data-open-operation-modal="true"
+                            data-operation="withdraw"
+                            th:attr="data-account-id=${selectedAccount.accountId},data-account-name=${selectedAccount.name},data-action=@{/web/accounts/{id}/withdraw(id=${selectedAccount.accountId}, page=${currentPage}, limit=${itemsPerPage})}">
+                        Ouvrir le retrait
+                    </button>
+                </div>
+            </section>
+
+            <section th:if="${selectedAccount == null}" class="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-glow backdrop-blur-xl animate-rise">
+                <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Vue détaillée</p>
+                <h2 class="mt-3 font-display text-3xl text-white">Sélectionnez un compte</h2>
+                <p class="mt-3 text-sm leading-6 text-slate-400">
+                    Cliquez sur un compte pour ouvrir le tableau de bord détaillé avec ses opérations et son historique.
+                </p>
+            </section>
+
+            <section th:if="${selectedAccount != null}" class="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-glow backdrop-blur-xl animate-rise-delay-1">
+                <div class="flex items-center justify-between gap-4">
+                    <div>
+                        <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Historique</p>
+                        <h2 class="mt-2 font-display text-2xl text-white">Transactions récentes</h2>
+                    </div>
+                    <span class="rounded-full border border-white/10 bg-slate-950/40 px-3 py-1 text-xs font-semibold text-slate-300">
+                        <span th:text="${#lists.size(transactions)}">0</span> lignes
+                    </span>
+                </div>
+
+                <div class="mt-5 space-y-3">
+                    <div th:if="${#lists.isEmpty(transactions)}" class="rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-8 text-center text-sm text-slate-400">
+                        Aucune transaction enregistrée pour l'instant.
+                    </div>
+
+                    <article th:each="tx : ${transactions}" class="rounded-2xl border border-white/10 bg-slate-950/40 p-4 transition hover:border-cyan-400/20 hover:bg-slate-950/60">
+                        <div class="flex items-start justify-between gap-3">
+                            <div>
+                                <p class="text-sm font-semibold text-white" th:text="${tx.description}">Description</p>
+                                <p class="mt-1 text-xs text-slate-400" th:text="${#temporals.format(tx.timestamp, 'dd/MM/yyyy HH:mm:ss')}">Timestamp</p>
+                            </div>
+                            <span th:classappend="${tx.type.name() == 'DEPOSIT'} ? ' border-emerald-400/20 bg-emerald-400/10 text-emerald-100' : ' border-rose-400/20 bg-rose-400/10 text-rose-100'"
+                                  class="rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em]"
+                                  th:text="${tx.type}">
+                                DEPOSIT
+                            </span>
+                        </div>
+
+                        <div class="mt-4 grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
+                            <div class="rounded-xl border border-white/10 bg-white/5 p-3">
+                                <p class="text-xs uppercase tracking-[0.18em] text-slate-500">Montant</p>
+                                <p class="mt-2 font-semibold text-white"><span th:text="${tx.amount}">0.00</span> FCFA</p>
+                            </div>
+                            <div class="rounded-xl border border-white/10 bg-white/5 p-3">
+                                <p class="text-xs uppercase tracking-[0.18em] text-slate-500">Nouveau solde</p>
+                                <p class="mt-2 font-semibold text-white"><span th:text="${tx.newBalance}">0.00</span> FCFA</p>
+                            </div>
+                            <div class="rounded-xl border border-white/10 bg-white/5 p-3">
+                                <p class="text-xs uppercase tracking-[0.18em] text-slate-500">Compte</p>
+                                <p class="mt-2 font-semibold text-white" th:text="${tx.accountId}">1</p>
+                            </div>
+                            <div class="rounded-xl border border-white/10 bg-white/5 p-3">
+                                <p class="text-xs uppercase tracking-[0.18em] text-slate-500">Type</p>
+                                <p class="mt-2 font-semibold text-white" th:text="${tx.type}">DEPOSIT</p>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </section>
+        </aside>
+    </section>
+</div>
+
+<div id="accountQuickModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/80 px-4 py-8 backdrop-blur-sm">
+    <div class="w-full max-w-lg rounded-[2rem] border border-white/10 bg-slate-900/95 p-6 shadow-2xl">
+        <div class="flex items-start justify-between gap-4">
+            <div>
+                <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Aperçu rapide</p>
+                <h3 id="quickModalName" class="mt-2 font-display text-3xl text-white">Compte</h3>
+            </div>
+            <button type="button" class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200 transition hover:bg-white/10" onclick="closeModal('accountQuickModal')">
+                Fermer
+            </button>
+        </div>
+        <div class="mt-6 grid gap-3 sm:grid-cols-2">
+            <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <p class="text-xs uppercase tracking-[0.18em] text-slate-500">ID</p>
+                <p id="quickModalId" class="mt-2 font-semibold text-white">-</p>
+            </div>
+            <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <p class="text-xs uppercase tracking-[0.18em] text-slate-500">Balance</p>
+                <p id="quickModalBalance" class="mt-2 font-semibold text-white">-</p>
+            </div>
+            <div class="rounded-2xl border border-white/10 bg-white/5 p-4 sm:col-span-2">
+                <p class="text-xs uppercase tracking-[0.18em] text-slate-500">Email</p>
+                <p id="quickModalEmail" class="mt-2 break-words font-semibold text-white">-</p>
+            </div>
+            <div class="rounded-2xl border border-white/10 bg-white/5 p-4 sm:col-span-2">
+                <p class="text-xs uppercase tracking-[0.18em] text-slate-500">Créé le</p>
+                <p id="quickModalCreated" class="mt-2 font-semibold text-white">-</p>
+            </div>
+        </div>
+        <div class="mt-6 flex flex-col gap-3 sm:flex-row">
+            <a id="quickModalLink" href="#"
+               class="inline-flex flex-1 items-center justify-center rounded-2xl bg-gradient-to-r from-cyan-400 via-sky-400 to-emerald-400 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:translate-y-[-1px]">
+                Ouvrir le compte
+            </a>
+            <button type="button" class="inline-flex flex-1 items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-slate-100 transition hover:border-cyan-400/40 hover:bg-cyan-400/10" onclick="closeModal('accountQuickModal')">
+                Retour
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="operationModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/80 px-4 py-8 backdrop-blur-sm">
+    <div class="w-full max-w-lg rounded-[2rem] border border-white/10 bg-slate-900/95 p-6 shadow-2xl">
+        <div class="flex items-start justify-between gap-4">
+            <div>
+                <p id="operationModalKicker" class="text-xs uppercase tracking-[0.2em] text-cyan-300">Opération</p>
+                <h3 id="operationModalTitle" class="mt-2 font-display text-3xl text-white">Montant</h3>
+                <p id="operationModalSubtitle" class="mt-2 text-sm text-slate-400">Saisissez un montant et validez.</p>
+            </div>
+            <button type="button" class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200 transition hover:bg-white/10" onclick="closeModal('operationModal')">
+                Fermer
+            </button>
+        </div>
+
+        <form id="operationForm" method="post" class="mt-6 space-y-4">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <input type="hidden" name="page" th:value="${currentPage}">
+            <input type="hidden" name="limit" th:value="${itemsPerPage}">
+
+            <div>
+                <label for="operationAmount" class="mb-2 block text-sm font-semibold text-slate-200">Montant</label>
+                <input id="operationAmount" type="number" name="amount" min="0.01" step="0.01" required placeholder="250.00"
+                       class="w-full rounded-2xl border border-white/10 bg-slate-950/50 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-400/60 focus:ring-4 focus:ring-cyan-400/10">
+            </div>
+
+            <div class="grid gap-3 sm:grid-cols-2">
+                <button id="operationSubmit" type="submit"
+                        class="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-cyan-400 via-sky-400 to-emerald-400 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:translate-y-[-1px]">
+                    Valider
+                </button>
+                <button type="button"
+                        class="inline-flex items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-slate-100 transition hover:border-cyan-400/40 hover:bg-cyan-400/10"
+                        onclick="closeModal('operationModal')">
+                    Annuler
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function filterAccounts() {
+        const query = document.getElementById('accountSearch').value.trim().toLowerCase();
+        const rows = document.querySelectorAll('[data-account-row="true"]');
+
+        rows.forEach((row) => {
+            const haystack = (row.getAttribute('data-search') || '').toLowerCase();
+            row.style.display = haystack.includes(query) ? '' : 'none';
+        });
+    }
+
+    function openModal(id) {
+        const modal = document.getElementById(id);
+        if (!modal) return;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.body.classList.add('modal-open');
+    }
+
+    function closeModal(id) {
+        const modal = document.getElementById(id);
+        if (!modal) return;
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        document.body.classList.remove('modal-open');
+    }
+
+    document.querySelectorAll('[data-open-account-modal="true"]').forEach((button) => {
+        button.addEventListener('click', () => {
+            document.getElementById('quickModalId').textContent = button.dataset.accountId || '-';
+            document.getElementById('quickModalName').textContent = button.dataset.accountName || 'Compte';
+            document.getElementById('quickModalEmail').textContent = button.dataset.accountEmail || '-';
+            document.getElementById('quickModalBalance').textContent = (button.dataset.accountBalance || '-') + ' FCFA';
+            document.getElementById('quickModalCreated').textContent = button.dataset.accountCreated || '-';
+            document.getElementById('quickModalLink').href = button.dataset.accountLink || '#';
+            openModal('accountQuickModal');
+        });
+    });
+
+    document.querySelectorAll('[data-open-operation-modal="true"]').forEach((button) => {
+        button.addEventListener('click', () => {
+            const operation = button.dataset.operation || 'deposit';
+            const action = button.dataset.action || '#';
+
+            const kicker = document.getElementById('operationModalKicker');
+            const title = document.getElementById('operationModalTitle');
+            const subtitle = document.getElementById('operationModalSubtitle');
+            const submit = document.getElementById('operationSubmit');
+            const form = document.getElementById('operationForm');
+
+            form.action = action;
+            if (operation === 'withdraw') {
+                kicker.textContent = 'Retrait rapide';
+                title.textContent = 'Retirer des fonds';
+                subtitle.textContent = 'Le montant sera débité du compte sélectionné.';
+                submit.textContent = 'Valider le retrait';
+            } else {
+                kicker.textContent = 'Dépôt rapide';
+                title.textContent = 'Ajouter des fonds';
+                subtitle.textContent = 'Le montant sera crédité sur le compte sélectionné.';
+                submit.textContent = 'Valider le dépôt';
+            }
+
+            document.getElementById('operationAmount').value = '';
+            openModal('operationModal');
+        });
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            closeModal('accountQuickModal');
+            closeModal('operationModal');
+        }
+    });
+
+    document.querySelectorAll('#accountQuickModal, #operationModal').forEach((modal) => {
+        modal.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                closeModal(modal.id);
+            }
+        });
+    });
+</script>
 </body>
 </html>

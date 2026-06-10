@@ -94,6 +94,9 @@ public class AccountService {
 
     @Transactional(readOnly = true)
     public List<TransactionDto> getAccountTransactions(Long accountId, int limit) {
+        if (!accountRepository.existsById(accountId)) {
+            throw new AccountNotFoundException(accountId);
+        }
         List<Transaction> transactions = transactionRepository.findByAccountIdOrderByTimestampDesc(accountId);
         return transactions.stream()
             .limit(limit)
@@ -141,5 +144,4 @@ public class AccountService {
         );
     }
 }
-
 
