@@ -725,6 +725,7 @@ Ce projet est prêt pour un déploiement direct sur Render via le fichier `rende
 ### Fichiers utilisés par Render
 - [`render.yaml`](render.yaml): blueprint du service et de la base
 - [`Dockerfile`](Dockerfile): build et lancement de l’application
+- [`entrypoint.sh`](entrypoint.sh): normalisation de l’URL PostgreSQL Render
 
 ### Après le déploiement
 1. Ouvre le service Render.
