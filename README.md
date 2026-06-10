@@ -705,6 +705,35 @@ Voir les documents:
 
 ---
 
+## Déploiement Render
+
+Ce projet est prêt pour un déploiement direct sur Render via le fichier `render.yaml` à la racine.
+
+### Ce que Render crée
+- 1 service web Java
+- 1 base PostgreSQL liée automatiquement au service
+- 1 profil Spring `prod`
+
+### Réglages déjà prévus
+- Build: `mvn clean package -DskipTests`
+- Start: `java -jar target/bank-api-0.0.1-SNAPSHOT.jar`
+- Profil actif: `prod`
+- Port: fourni par Render via `PORT`
+- Base de données: injectée automatiquement via les variables `SPRING_DATASOURCE_*`
+
+### Après le déploiement
+1. Ouvre le service Render.
+2. Vérifie les logs de démarrage.
+3. Attends le premier build complet.
+4. Si tu ajoutes des changements, Render redéploie automatiquement grâce à `autoDeploy: true`.
+
+### En cas de souci
+- Si la base n’est pas accessible, vérifie que le service PostgreSQL a bien été créé.
+- Si l’application ne démarre pas, vérifie que le jar généré est bien `target/bank-api-0.0.1-SNAPSHOT.jar`.
+- Si tu changes de nom d’artifact Maven, pense à mettre à jour `startCommand`.
+
+---
+
 ## License
 
 CEL Project @2024 - All Rights Reserved
