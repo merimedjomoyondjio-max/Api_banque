@@ -16,22 +16,26 @@ if [ -n "$raw_url" ]; then
       path_and_query="${url_no_scheme#*/}"
 
       if [ "$authority" = "${authority#*@}" ]; then
-        export SPRING_DATASOURCE_URL="jdbc:postgresql://$authority/$path_and_query"
+        hostpart="$authority"
       else
         creds="${authority%@*}"
         hostpart="${authority#*@}"
-        db_url="jdbc:postgresql://$hostpart/$path_and_query"
-
         if [ -n "$creds" ]; then
-          export SPRING_DATASOURCE_URL="$db_url"
           export SPRING_DATASOURCE_USERNAME="${creds%%:*}"
           if [ "$creds" != "${creds#*:}" ]; then
             export SPRING_DATASOURCE_PASSWORD="${creds#*:}"
           fi
-        else
-          export SPRING_DATASOURCE_URL="$db_url"
         fi
       fi
+
+      case "$hostpart" in
+        *.*) ;;
+        *)
+          hostpart="${hostpart}.${RENDER_POSTGRES_HOST_SUFFIX:-oregon-postgres.render.com}"
+          ;;
+      esac
+
+      export SPRING_DATASOURCE_URL="jdbc:postgresql://$hostpart/$path_and_query"
       ;;
     *)
       export SPRING_DATASOURCE_URL="jdbc:$raw_url"

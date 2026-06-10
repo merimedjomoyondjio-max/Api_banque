@@ -32,5 +32,7 @@ services:
         value: org.postgresql.Driver
       - key: SPRING_JPA_DATABASE_PLATFORM
         value: org.hibernate.dialect.PostgreSQLDialect
+      - key: RENDER_POSTGRES_HOST_SUFFIX
+        value: oregon-postgres.render.com
       - key: JAVA_TOOL_OPTIONS
         value: -XX:MaxRAMPercentage=75 -XX:+ExitOnOutOfMemoryError

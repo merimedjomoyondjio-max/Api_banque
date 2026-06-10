@@ -721,6 +721,7 @@ Ce projet est prêt pour un déploiement direct sur Render via le fichier `rende
 - Port: fourni par Render via `PORT`
 - Base de données: injectée automatiquement via les variables `SPRING_DATASOURCE_*`
 - URL JDBC: normalisée au démarrage du conteneur, que Render injecte `SPRING_DATASOURCE_URL` ou `DATABASE_URL`
+- Suffixe Render: ajouté automatiquement si l'hôte PostgreSQL arrive sans domaine complet
 
 ### Fichiers utilisés par Render
 - [`render.yaml`](render.yaml): blueprint du service et de la base
